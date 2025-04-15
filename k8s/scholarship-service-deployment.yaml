@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scholarship-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scholarship-service
+  template:
+    metadata:
+      labels:
+        app: scholarship-service
+    spec:
+      containers:
+        - name: scholarship-service
+          image: maxwellc21/scholarship-service:latest
+          ports:
+            - containerPort: 5003
+          env:
+            - name: PORT
+              value: "5003"
+            - name: MONGO_URI
+              value: mongodb://mongo:27017/scholarship-db
+            - name: JWT_SECRET
+              value: your_jwt_secret

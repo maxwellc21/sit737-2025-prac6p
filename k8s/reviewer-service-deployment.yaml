@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviewer-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reviewer-service
+  template:
+    metadata:
+      labels:
+        app: reviewer-service
+    spec:
+      containers:
+        - name: reviewer-service
+          image: maxwellc21/reviewer-service:latest
+          ports:
+            - containerPort: 5006
+          env:
+            - name: PORT
+              value: "5006"
+            - name: MONGO_URI
+              value: mongodb://mongo:27017/reviewer-db
+            - name: JWT_SECRET
+              value: your_jwt_secret

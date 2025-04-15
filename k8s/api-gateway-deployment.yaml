@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: maxwellc21/api-gateway:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              value: "5000"
+            - name: AUTH_SERVICE_URL
+              value: http://auth-service
+            - name: STUDENT_SERVICE_URL
+              value: http://student-service
+            - name: SCHOLARSHIP_SERVICE_URL
+              value: http://scholarship-service
+            - name: APPLICATION_SERVICE_URL
+              value: http://application-service
+            - name: REVIEWER_SERVICE_URL
+              value: http://reviewer-service
+            - name: FILE_SERVICE_URL
+              value: http://file-service
+            - name: ADMIN_SERVICE_URL
+              value: http://admin-service

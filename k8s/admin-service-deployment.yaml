@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-service
+  template:
+    metadata:
+      labels:
+        app: admin-service
+    spec:
+      containers:
+        - name: admin-service
+          image: maxwellc21/admin-service:latest
+          ports:
+            - containerPort: 5009
+          env:
+            - name: PORT
+              value: "5009"
+            - name: MONGO_URI
+              value: mongodb://mongo:27017/scholarship-auth
+            - name: JWT_SECRET
+              value: your_jwt_secret

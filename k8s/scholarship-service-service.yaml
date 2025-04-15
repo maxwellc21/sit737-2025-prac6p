@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scholarship-service
+spec:
+  selector:
+    app: scholarship-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5003
+  type: ClusterIP

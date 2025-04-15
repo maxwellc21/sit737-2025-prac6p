@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    container_name: scholarship-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  auth-service:
+    build: ./auth-service
+    image: maxwellc21/auth-service:latest
+    container_name: auth-service
+    ports:
+      - "5005:5005"
+    environment:
+      - PORT=5005
+      - MONGO_URI=mongodb://mongo:27017/auth-db
+      - JWT_SECRET=your_jwt_secret
+      - GOOGLE_CLIENT_ID=your_google_client_id
+      - GOOGLE_CLIENT_SECRET=your_google_client_secret
+    depends_on:
+      - mongo
+
+  student-service:
+    build: ./student-service
+    image: maxwellc21/student-service:latest
+    container_name: student-service
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - MONGO_URI=mongodb://mongo:27017/student-db
+      - JWT_SECRET=your_jwt_secret
+    depends_on:
+      - mongo
+
+  scholarship-service:
+    build: ./scholarship-service
+    image: maxwellc21/scholarship-service:latest
+    container_name: scholarship-service
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - MONGO_URI=mongodb://mongo:27017/scholarship-db
+      - JWT_SECRET=your_jwt_secret
+    depends_on:
+      - mongo
+
+  application-service:
+    build: ./application-service
+    image: maxwellc21/application-service:latest
+    container_name: application-service
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      - MONGO_URI=mongodb://mongo:27017/application-db
+      - JWT_SECRET=your_jwt_secret
+    depends_on:
+      - mongo
+
+  reviewer-service:
+    build: ./reviewer-service
+    image: maxwellc21/reviewer-service:latest
+    container_name: reviewer-service
+    ports:
+      - "5006:5006"
+    environment:
+      - PORT=5006
+      - MONGO_URI=mongodb://mongo:27017/reviewer-db
+      - JWT_SECRET=your_jwt_secret
+    depends_on:
+      - mongo
+
+  file-service:
+    build: ./file-service
+    image: maxwellc21/file-service:latest
+    container_name: file-service
+    ports:
+      - "5008:5008"
+    environment:
+      - PORT=5008
+      - JWT_SECRET=your_jwt_secret
+    volumes:
+      - ./file-service/uploads:/app/uploads
+    depends_on:
+      - mongo
+
+  admin-service:
+    build: ./admin-service
+    image: maxwellc21/admin-service:latest
+    container_name: admin-service
+    ports:
+      - "5009:5009"
+    environment:
+      - PORT=5009
+      - MONGO_URI=mongodb://mongo:27017/scholarship-auth
+      - JWT_SECRET=your_jwt_secret
+    depends_on:
+      - mongo
+
+  api-gateway:
+    build: ./api-gateway
+    image: maxwellc21/api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - AUTH_SERVICE_URL=http://auth-service:5005
+      - STUDENT_SERVICE_URL=http://student-service:5002
+      - SCHOLARSHIP_SERVICE_URL=http://scholarship-service:5003
+      - APPLICATION_SERVICE_URL=http://application-service:5004
+      - REVIEWER_SERVICE_URL=http://reviewer-service:5006
+      - FILE_SERVICE_URL=http://file-service:5008
+      - ADMIN_SERVICE_URL=http://admin-service:5009
+    depends_on:
+      - auth-service
+      - student-service
+      - scholarship-service
+      - application-service
+      - reviewer-service
+      - file-service
+      - admin-service
+
+volumes:
+  mongo-data:
